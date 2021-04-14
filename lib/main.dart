@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Time Tracker',
       theme: ThemeData(
-        primaryColor: Colors.purpleAccent,
+        primaryColor: Colors.teal[700],
       ),
       home: SignInPage()
       );
