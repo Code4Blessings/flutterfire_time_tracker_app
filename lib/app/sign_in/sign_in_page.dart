@@ -1,17 +1,24 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_time_tracker_app/app/sign_in/signin_button.dart';
 import 'package:flutterfire_time_tracker_app/app/sign_in/social_siginin_button.dart';
+import 'package:flutterfire_time_tracker_app/services/auth.dart';
 
 class SignInPage extends StatelessWidget {
-  final void Function(User) onSignIn;
+  final AuthBase auth;
 
-  const SignInPage({Key key, @required this.onSignIn}) : super(key: key);
+  const SignInPage({Key key, @required this.auth }) : super(key: key);
 
-  Future<void> _signinAnonymously()async {
+  Future<void> _signInAnonymously() async {
     try {
-      final userCredentials = await FirebaseAuth.instance.signInAnonymously();
-      onSignIn(userCredentials.user);
+      await auth.signInAnonymously();
+    } catch (err) {
+      print(err.toString());
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      await auth.signInWithGoogle();
     } catch (err) {
       print(err.toString());
     }
@@ -50,7 +57,7 @@ class SignInPage extends StatelessWidget {
             text: 'Sign in with Google',
             textColor: Colors.black87,
             color: Colors.white,
-            onPressed: () {},
+            onPressed: _signInWithGoogle,
           ),
           SizedBox(height: 8.0),
           SocialSignInButton(
@@ -81,7 +88,7 @@ class SignInPage extends StatelessWidget {
             text: 'Go anonymous',
             textColor: Colors.black,
             color: Colors.lime[300],
-            onPressed: _signinAnonymously,
+            onPressed: _signInAnonymously,
           ),
         ],
       ),

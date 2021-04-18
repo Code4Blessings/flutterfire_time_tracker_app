@@ -1,32 +1,38 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_time_tracker_app/app/sign_in/sign_in_page.dart';
+import 'package:flutterfire_time_tracker_app/services/auth.dart';
 
 import 'home_page.dart';
 
-class LandingPage extends StatefulWidget {
-  @override
-  _LandingPageState createState() => _LandingPageState();
-}
+class LandingPage extends StatelessWidget {
+  final AuthBase auth;
 
-class _LandingPageState extends State<LandingPage> {
-  User _user;
-
-  void _updateUser(User user) {
-    setState(() {
-      _user = user;
-    });
-  }
+  const LandingPage({Key key, @required this.auth}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if(_user == null) {
-      return SignInPage(
-        onSignIn:  _updateUser,
-      );
-    }
-    return HomePage(
-      onSignOut: () => _updateUser(null),
+    return StreamBuilder<User>(
+      stream: auth.authStateChanges(),
+      builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.active) {
+          final User user = snapshot.data;
+          if(user == null) {
+            return SignInPage(
+              auth: auth,
+            );
+          }
+          return HomePage(
+            auth: auth,
+          );
+        }
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
     );
+
   }
 }
